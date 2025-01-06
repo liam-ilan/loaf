@@ -1,0 +1,40 @@
+temp_dir = ".loaf~tmp~dir"
+cc = "gcc"
+
+// Setup cloned dir for building.
+setup = {temp_dir entry used_files ->
+  (use "./src/template.crumb" {
+    (shell (join 
+        "git clone -c advice.detachedHead=false "
+        "--depth 1 https://github.com/liam-ilan/crumb.git " 
+        temp_dir
+    ))
+
+    (shell (join "rm " temp_dir "/src/main.c"))
+    (write_file (join temp_dir "/src/main.c") (template_main entry used_files))
+  })
+}
+
+// Build.
+build = {result temp_dir ->
+  (shell (join cc " " temp_dir "/src/*.c -Wall -lm -o " result))
+}
+
+// Clean the temporary dir.
+clean = {temp_dir ->
+  (shell (join "rm -rf " temp_dir))
+}
+
+(if (is (length arguments) 2) {
+  entry = (get arguments 0)
+  result = (get arguments 1)
+
+  (use "./src/utils.crumb" {
+    (setup temp_dir entry (find_crumb_files))
+  })
+
+  (build result temp_dir)
+  (clean temp_dir)
+} {
+  (print "Error: Not enough arguments supplied.")
+})
