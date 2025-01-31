@@ -1,6 +1,7 @@
 # do not include crumb interpreter/loaf packager
 crumb
 loaf
+loaf2
 
 # apple
 .DS_Store
