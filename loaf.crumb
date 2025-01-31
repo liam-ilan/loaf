@@ -1,16 +1,29 @@
 temp_dir = ".loaf~tmp~dir"
 cc = "gcc"
+default_tag = void
 
 // Setup cloned dir for building.
-setup = {temp_dir entry used_files ->
-  (use "./src/template.crumb" {
-    (shell (join 
-        "git clone -c advice.detachedHead=false "
-        "--depth 1 https://github.com/liam-ilan/crumb.git " 
-        temp_dir
-    ))
+setup = {temp_dir entry used_files tag ->
 
-    (shell (join "rm " temp_dir "/src/main.c"))
+  // Flag for specifying tag.
+  branch_flag = (if (not (is tag void)) {
+    <- (join "--branch " tag)
+  } { <- ""})
+
+  // Clone repo.
+  (shell (join 
+      "git clone -c advice.detachedHead=false "
+      branch_flag
+      " --depth 1 https://github.com/liam-ilan/crumb.git " 
+      temp_dir
+  ))
+
+  // Remove normal main.c.
+  (shell (join "rm " temp_dir "/src/main.c"))
+
+  // Replace with template.
+  loaf_template_usable = (join temp_dir "/loaf-template/template.crumb")
+  (use loaf_template_usable {
     (write_file (join temp_dir "/src/main.c") (template_main entry used_files))
   })
 }
@@ -25,16 +38,27 @@ clean = {temp_dir ->
   (shell (join "rm -rf " temp_dir))
 }
 
-(if (is (length arguments) 2) {
+(if (and 
+  (not (is (length arguments) 2))
+  (not (is (length arguments) 3))
+) {
+  (print "Invalid arguments - expected one of:\n")
+  (print "- `loaf <entry file> <output path>`\n")
+  (print "- `loaf <entry file> <output path> <crumb version tag>`\n")
+} {
+
+  // Get arguments.
   entry = (get arguments 0)
   result = (get arguments 1)
+  tag = (if (is (length arguments) 3) {
+    <- (get arguments 2)
+  } { <- default_tag })
 
-  (use "./src/utils.crumb" {
-    (setup temp_dir entry (find_crumb_files))
-  })
+  // Get all crumb files.
+  crumb_files = (use "./src/utils.crumb" {<- (find_crumb_files)})
 
+  // Setup, build, and clean.
+  (setup temp_dir entry crumb_files tag)
   (build result temp_dir)
   (clean temp_dir)
-} {
-  (print "Error: Not enough arguments supplied.")
 })
