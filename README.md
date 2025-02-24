@@ -9,7 +9,7 @@ Loaf is a Crumb program, that compiles other Crumb programs into standalone bina
 
 First, build crumb.
 ```bash
-chmod +x build-crumb.sh && ./build-crumb.sh
+chmod +x setup.sh && ./setup.sh
 ```
 
 You can now try to run Loaf on itself, bootstrapping it's own binary.
@@ -22,7 +22,12 @@ This will create a `loaf` binary you can invoke from anywhere, on any crumb prog
 ./loaf ENTRY_POINT.crumb OUTPUT_BINARY_PATH
 ```
 
-Eg. to bootstrap Loaf again, you can run
+To bundle [`app.crumb`](./app.crumb), 
+```bash
+./loaf app.crumb app
+```
+
+To bootstrap Loaf again, you can run
 ```bash
 ./loaf ./loaf.crumb ./loaf2
 ```

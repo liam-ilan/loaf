@@ -1,6 +1,6 @@
 temp_dir = ".loaf~tmp~dir"
 cc = "gcc"
-default_tag = void
+default_tag = "v0.0.5"
 
 // Setup cloned dir for building.
 setup = {temp_dir entry used_files tag ->
