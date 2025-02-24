@@ -4,6 +4,9 @@ Build your [Crumb](https://github.com/liam-ilan/crumb) programs as standalone bi
 ## What is this?
 Loaf is a Crumb program, that compiles other Crumb programs into standalone binaries. This is done by injecting the the source of your crumb programs into the Crumb interpreter's source code, compiling your scripts with the Crumb runtime.
 
+## Install
+**You do not need to clone this repo to use Crumb/Loaf**. Instead, follow the instructions in this [template repo](https://github.com/liam-ilan/crumb-template). Only clone this repo if you are working on Loaf itself.
+
 ## Getting Started
 > Crumb is built for POSIX compliant systems, and utilizes `ioctl.h` and `unistd.h`. To use Crumb on windows, either use WSL, or use a Linux container.
 
